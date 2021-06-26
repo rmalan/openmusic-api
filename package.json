@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start-dev": "nodemon ./src/server.js",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "migrate": "node-pg-migrate"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,9 @@
   },
   "dependencies": {
     "@hapi/hapi": "^20.1.4",
-    "nanoid": "^3.1.23"
+    "dotenv": "^10.0.0",
+    "nanoid": "^3.1.23",
+    "node-pg-migrate": "^5.9.0",
+    "pg": "^8.6.0"
   }
 }
