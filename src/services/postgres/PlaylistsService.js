@@ -70,16 +70,16 @@ class PlaylistsService {
     }
   }
 
-  async verifyPlaylistAccess(playlistId, userId) {
+  async verifyPlaylistAccess(id, userId) {
     try {
-      await this._collaborationService.verifyCollaborator(playlistId, userId);
+      await this._collaborationService.verifyCollaborator(id, userId);
     } catch (error) {
-      if (error instanceof NotFoundError) {
+      if (error instanceof InvariantError) {
         throw error;
       }
 
       try {
-        await this.verifyPlaylistOwner(playlistId, userId);
+        await this.verifyPlaylistOwner(id, userId);
       } catch {
         throw error;
       }
