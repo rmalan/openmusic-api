@@ -5,9 +5,10 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
-  constructor(collaborationService) {
+  constructor(collaborationService, cacheService) {
     this._pool = new Pool();
     this._collaborationService = collaborationService;
+    this._cacheService = cacheService;
   }
 
   async addPlaylist({ name, owner }) {
@@ -24,25 +25,34 @@ class PlaylistsService {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
 
+    await this._cacheService.delete(`playlists:${owner}`);
+
     return result.rows[0].id;
   }
 
   async getPlaylists(owner) {
-    const query = {
-      text: `SELECT playlists.id, name, username FROM playlists 
-      LEFT JOIN users ON users.id = playlists.owner 
-      LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
-      WHERE owner = $1 OR user_id = $1`,
-      values: [owner],
-    };
-    const result = await this._pool.query(query);
+    try {
+      const result = await this._cacheService.get(`playlists:${owner}`);
+      return JSON.parse(result);
+    } catch (error) {
+      const query = {
+        text: `SELECT playlists.id, name, username FROM playlists 
+        LEFT JOIN users ON users.id = playlists.owner 
+        LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+        WHERE owner = $1 OR user_id = $1`,
+        values: [owner],
+      };
+      const result = await this._pool.query(query);
 
-    return result.rows;
+      await this._cacheService.set(`playlists:${owner}`, JSON.stringify(result.rows));
+
+      return result.rows;
+    }
   }
 
   async deletePlaylistById(id) {
     const query = {
-      text: 'DELETE FROM playlists WHERE id = $1 RETURNING id',
+      text: 'DELETE FROM playlists WHERE id = $1 RETURNING id, owner',
       values: [id],
     };
 
@@ -51,6 +61,9 @@ class PlaylistsService {
     if (!result.rowCount) {
       throw new NotFoundError('Playlist gagal dihapus. Id tidak ditemukan');
     }
+
+    const { owner } = result.rows[0];
+    await this._cacheService.delete(`playlists:${owner}`);
   }
 
   async verifyPlaylistOwner(id, owner) {
