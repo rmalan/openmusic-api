@@ -1,33 +1,22 @@
 {
-  "name": "openmusic-api",
+  "name": "openmusic-api-queue-consumer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-dev": "nodemon ./src/server.js",
-    "lint": "eslint ./src",
-    "migrate": "node-pg-migrate"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "eslint": "^7.29.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.4",
-    "nodemon": "^2.0.7"
-  },
   "dependencies": {
-    "@hapi/hapi": "^20.1.4",
-    "@hapi/inert": "^6.0.3",
-    "@hapi/jwt": "^2.0.1",
     "amqplib": "^0.8.0",
-    "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
-    "joi": "^17.4.0",
-    "nanoid": "^3.1.23",
-    "node-pg-migrate": "^5.9.0",
-    "pg": "^8.6.0",
-    "redis": "^3.1.2"
+    "nodemailer": "^6.6.3",
+    "pg": "^8.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.30.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4"
   }
 }
